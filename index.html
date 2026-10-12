@@ -25,7 +25,7 @@ label.f{display:block;margin:12px 0 4px;font-weight:600;font-size:.8rem;color:#4
 <div id="adm"></div><div id="toast"></div>
 <script>
 // Isi dengan alamat website sekolah agar muncul tombol "Lihat Website", contoh: 'https://namaanda.github.io/website-sekolah/'
-const SITE_URL='';
+const SITE_URL='https://rpc13.github.io/ujicobawebsite/';
 const API='https://script.google.com/macros/s/AKfycbxhl4jQrdpwWK3IyOeUn7I4GRrxDI6Rhx3JsGcpg5wOGA9KVL2_3scokj8eNUmEHROyeQ/exec';
 const IMG=u=>{u=String(u||'').trim();const m=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&(?:amp;)?)?id=|thumbnail\?id=)([\w-]{20,})/)||u.match(/lh3\.googleusercontent\.com\/d\/([\w-]{20,})/);return m?'https://drive.google.com/thumbnail?id='+m[1]+'&sz=w1600':u};
 const $=s=>document.querySelector(s),E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),N=s=>E(s).replace(/\n/g,'<br>'),SU=u=>{u=IMG(u);return /^https?:\/\//.test(u)?E(u):''},L=u=>/^(https?:|#|mailto:|tel:)/.test(u)?E(u):'#',FN=x=>String(x).replace(/[^\w ]/g,'');
