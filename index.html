@@ -65,7 +65,17 @@ if(t=='color')return`<input ${a} type="color" value="${E(v||'#000000')}">`;
 return`<input ${a} type="${t=='num'?'number':t=='date'?'date':'text'}" value="${E(v)}">`}
 const val=el=>{const o={};el.querySelectorAll('[data-k]').forEach(i=>o[i.dataset.k]=i.value);return o};
 const pv=i=>{const m=i.closest('.ig').nextElementSibling,u=IMG(i.value);m.hidden=!/^https?:/.test(u);if(!m.hidden)m.src=u};
-const up=f=>new Promise((ok,no)=>{if(!/^image\//.test(f.type)&&!/\.(jpe?g|png|webp|gif)$/i.test(f.name))return no(Error('Pilih file gambar (JPG, PNG, WEBP, atau GIF)'));const im=new Image,r=new FileReader;r.onerror=()=>no(Error('Gagal membaca file'));r.onload=()=>{im.onload=()=>{const q=Math.min(1,1400/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*q);c.height=Math.round(im.height*q);c.getContext('2d').drawImage(im,0,0,c.width,c.height);let mt='image/jpeg',d=c.toDataURL(mt,.82);if(f.type=='image/png'){const p=c.toDataURL('image/png');if(p.length<1200000){mt='image/png';d=p}}api('upload',{filename:f.name.replace(/\.\w+$/,'')+(mt=='image/png'?'.png':'.jpg'),mimeType:mt,data:d.split(',')[1]}).then(ok,no)};im.onerror=()=>no(Error('File bukan gambar yang valid (pakai JPG/PNG/WEBP)'));im.src=r.result};r.readAsDataURL(f)});
+const up=f=>new Promise((ok,no)=>{if(!/^image\//.test(f.type)&&!/\.(jpe?g|png|webp|gif)$/i.test(f.name))return no(Error('Pilih file gambar (JPG, PNG, WEBP, atau GIF)'));
+const r=new FileReader;r.onerror=()=>no(Error('Gagal membaca file'));
+r.onload=()=>{const im=new Image,send=(mt,d,ext)=>api('upload',{filename:f.name.replace(/\.\w+$/,'')+ext,mimeType:mt,data:d.split(',')[1]}).then(ok,no);
+im.onerror=()=>no(Error('File bukan gambar yang valid (pakai JPG/PNG/WEBP)'));
+im.onload=()=>{const M=Math.max(im.width,im.height),ty=f.type;
+if(f.size<1.5e6&&/^image\/(png|jpe?g|webp|gif)$/.test(ty)&&M<=2400)return send(ty,r.result,'.'+(ty.split('/')[1]=='jpeg'?'jpg':ty.split('/')[1]));
+let q=Math.min(1,1400/M);const c=document.createElement('canvas'),x=c.getContext('2d'),draw=()=>{c.width=Math.round(im.width*q);c.height=Math.round(im.height*q);x.clearRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height)};draw();
+const px=x.getImageData(0,0,c.width,c.height).data;let al=false;for(let i=3;i<px.length;i+=16)if(px[i]<250){al=true;break}
+if(al){let d=c.toDataURL('image/png');while(d.length>2.8e6&&q>.2){q*=.8;draw();d=c.toDataURL('image/png')}return send('image/png',d,'.png')}
+const png=ty=='image/png'&&c.toDataURL('image/png').length<1.2e6;send(png?'image/png':'image/jpeg',c.toDataURL(png?'image/png':'image/jpeg',.82),png?'.png':'.jpg')};
+im.src=r.result};r.readAsDataURL(f)});
 const upf=go(async(f,i,el)=>{if(!f)return;if(el)el.disabled=true;toast('Mengunggah gambar…');try{const x=await up(f);i.value=x.url;pv(i);toast(x.warning||'Gambar terunggah. Klik Simpan agar tampil di website.')}finally{if(el){el.disabled=false;el.value=''}}});
 const pick=async b=>{const i=b.closest('.ig').querySelector('[data-k]');
 try{if(window.showOpenFilePicker){const[h]=await showOpenFilePicker({types:[{description:'Gambar',accept:{'image/*':['.jpg','.jpeg','.png','.webp','.gif']}}]});return upf(await h.getFile(),i,b)}}catch(e){if(e.name=='AbortError')return}
